@@ -90,15 +90,13 @@ maxent_MOD <- function(input, output, session, rvs) {
     }
    
     occs.xy <- rvs$occs %>% dplyr::select(longitude, latitude)
-    
-    e <- ENMeval::ENMevaluate(occs.xy, rvs$bgMsk, bg.coords = rvs$bgPts,
+    colnames(rvs$bgPts) <- c("longitude", "latitude")
+    e <- ENMeval::ENMevaluate(occ = occs.xy, env = rvs$bgMsk, bg.coords = rvs$bgPts,
                               RMvalues = rms, fc = input$fcs, method = 'user', 
                               occ.grp = rvs$occsGrp, bg.grp = rvs$bgGrp, 
                               bin.output = TRUE, clamp = rvs$clamp,
                               progbar = FALSE, updateProgress = updateProgress,
                               algorithm = input$algMaxent)
-    
-    names(e@models) <- e@results$settings
     
     if (rvs$clamp == T | rvs$algMaxent == "maxent.jar") {
       rvs %>% writeLog("Maxent ran successfully using", input$algMaxent, "and output evaluation results for", nrow(e@results), "clamped models.")
